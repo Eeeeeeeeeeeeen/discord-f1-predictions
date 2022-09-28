@@ -20,7 +20,7 @@ export const Predict: Command = {
         const errors: string [] = []
         var isDuplicate = false;
 
-        var content: string = `${interaction.user.username} selected 1. ${first} 2. ${second} 3. ${third}`;
+        var content: string = `<@${interaction.user.id}>ya selected 1. ${first} 2. ${second} 3. ${third}`;
 
         if(first === second || first === third || second === third)
         {
