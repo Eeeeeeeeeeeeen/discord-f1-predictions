@@ -1,6 +1,6 @@
 import { Pool, QueryResult } from "pg";
 
-const pool = new Pool({
+export const pool = new Pool({
     user: process.env.PGUSER,
     host: process.env.PGHOST,
     database: process.env.PGDATABASE,
@@ -24,6 +24,7 @@ export const getSessions = async (): Promise<QueryResult<Session>> => {
     
     return results;
 }
+
 
 interface Session {
     name: string;

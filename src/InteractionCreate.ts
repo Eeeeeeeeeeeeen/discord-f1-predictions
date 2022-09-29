@@ -11,12 +11,25 @@ export default (client: Client): void => {
 
 const handleSlashCommand = async (client: Client, interaction: CommandInteraction): Promise<void> => {
     const slashCommand = Commands.find(c => c.name === interaction.commandName);
+
+    await interaction.deferReply();
+
     if (!slashCommand) {
         interaction.followUp({ content: "An error has occurred" });
         return;
     }
 
-    await interaction.deferReply();
+    if(interaction.guildId === null)
+    {
+        interaction.followUp({content: "Don't DM me you rat!"})
+        return;
+    }
 
-    slashCommand.run(client, interaction);
+    try {
+        await slashCommand.run(client, interaction);
+    } catch(e) {
+        const error = e as Error;
+
+        interaction.followUp({ephemeral: true, content:  error.message})
+    }
 }; 
