@@ -1,7 +1,7 @@
 import { pool } from "../ConnectDb"
 
-export const getPredictions = async (sessionId: number) => {
-    const result = await pool.query<Prediction>(`SELECT * from predictions WHERE session_id = ${sessionId}`)
+export const getPredictions = async (sessionId: number, serverId: string) => {
+    const result = await pool.query<Prediction>(`SELECT * from predictions WHERE session_id = ${sessionId} AND server_id = '${serverId}'`)
 
     return result;
 }

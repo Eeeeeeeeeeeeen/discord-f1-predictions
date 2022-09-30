@@ -19,7 +19,7 @@ export const GetPredictions: Command = {
         {
             throw new Error("There's no event on today!")
         }
-        const result = (await getPredictions(todaysSession.rows[0].id));
+        const result = (await getPredictions(todaysSession.rows[0].id, interaction.guildId as string));
 
         if(result.rowCount === 0)
         {
