@@ -12,7 +12,7 @@ export default (client: Client): void => {
 const handleSlashCommand = async (client: Client, interaction: CommandInteraction): Promise<void> => {
     const slashCommand = Commands.find(c => c.name === interaction.commandName);
 
-    await interaction.deferReply();
+    await interaction.deferReply({ephemeral: interaction.commandName === 'get-predictions' ? true : false});
 
     if (!slashCommand) {
         interaction.followUp({ content: "An error has occurred" });

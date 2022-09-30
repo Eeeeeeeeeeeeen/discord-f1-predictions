@@ -10,9 +10,9 @@ export const GetSessions: Command = {
     run: async(client: Client, interaction: CommandInteraction) => {      
         const result = (await getSessions());
 
-        const sessions = result.rows[0].name;
+        const sessions = result.rows[0];
 
-        const reply = `${sessions}\n${sessions}`
+        const reply = `${sessions.racename} ${sessions.date} ${sessions.time}`
 
         await interaction.followUp({
             ephemeral: true,

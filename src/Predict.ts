@@ -1,9 +1,9 @@
 import { ApplicationCommandOptionType, ApplicationCommandType, Client, CommandInteraction } from "discord.js";
 import { Command } from "./Command";
-import { createRequire } from "module";
 import { addPrediction } from "./queries/AddPredictionQuery";
 import { getPrediction } from "./queries/GetPredictionQuery";
 import { editPrediction } from "./queries/EditPredictionQuery";
+import { getTodaysSession } from "./queries/GetTodaysSessionQuery";
 
 export const Predict: Command = {
     name: "predict",
@@ -15,6 +15,18 @@ export const Predict: Command = {
         { name: "third", description: "Driver finishing 3rd", type: ApplicationCommandOptionType.String, required: true, minLength: 3, maxLength: 3 }
     ],
     run: async (client: Client, interaction: CommandInteraction) => {
+        const session = await getTodaysSession();
+
+        if(session.rowCount === 0)
+        {
+            throw new Error("There's not a session to predict today");
+        }
+
+        if(hasSessionStarted(session.rows[0].time))
+        {
+            throw new Error("Today's session has already started, don't try cheat me!")
+        }
+
         const response = await fetch('https://ergast.com/api/f1/2022/drivers.json', { method: 'GET' })
 
         if (!response.ok) {
@@ -47,20 +59,31 @@ export const Predict: Command = {
             throw new Error(`The following drivers are invalid: ${errors}`)
         }
 
-        const existingPrediction = (await getPrediction(interaction.user.id, interaction.guildId as string, 0)).rowCount > 0
+        const existingPrediction = (await getPrediction(interaction.user.id, interaction.guildId as string, session.rows[0].id)).rowCount > 0
 
         if (existingPrediction) {
-            editPrediction({ username: interaction.user.id, first: first, second: second, third: third, serverId: interaction.guildId as string, sessionId: 0 })
+            editPrediction({ username: interaction.user.id, first: first, second: second, third: third, serverId: interaction.guildId as string, sessionId: session.rows[0].id })
         } else {
-            addPrediction({ username: interaction.user.id, first: first, second: second, third: third, serverId: interaction.guildId as string, sessionId: 0 })
+            addPrediction({ username: interaction.user.id, first: first, second: second, third: third, serverId: interaction.guildId as string, sessionId: session.rows[0].id })
         }
-        var content: string = `<@${interaction.user.id}> selected 1. ${first} 2. ${second} 3. ${third}`;
+        var content: string = `<@${interaction.user.id}> selected 1. ${first} 2. ${second} 3. ${third} for the ${session.rows[0].racename} ${session.rows[0].name}`;
 
         await interaction.followUp({
-            ephemeral: true,
             content
         })
     }
+}
+
+function hasSessionStarted(time: string):boolean {
+    const dateNow = new Date()
+    const t = time.split(":");
+
+    const sessionTime = new Date();
+    sessionTime.setUTCHours(Number(t[0]));
+    sessionTime.setUTCMinutes(Number(t[1]))
+    sessionTime.setUTCSeconds(Number(t[2]))
+
+    return dateNow >= sessionTime;
 }
 
 export interface Drivers {

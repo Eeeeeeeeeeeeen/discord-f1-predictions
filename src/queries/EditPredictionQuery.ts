@@ -2,7 +2,7 @@ import { pool } from "../ConnectDb"
 
 export const editPrediction = async ({ username, first, second, third, serverId, sessionId }: AddPredictionParams) => {
     const query = `UPDATE predictions SET first = '${first}', second = '${second}', third = '${third}'` +
-        `WHERE username = '${username}' AND serverid = '${serverId}' AND sessionid = '${sessionId}';`
+        `WHERE user_id = '${username}' AND server_id = '${serverId}' AND session_id = '${sessionId}';`
 
     await pool.query(query)
 }

@@ -26,6 +26,14 @@ export const getSessions = async (): Promise<QueryResult<Session>> => {
 }
 
 
-interface Session {
+export interface Session {
+    id: number;
+    racename: string;
+    country: string;
+    circuit: string;
+    date: Date;
+    time: string;
+    season: number;
+    round: number;
     name: string;
 }
