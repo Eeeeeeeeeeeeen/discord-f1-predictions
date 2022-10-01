@@ -19,7 +19,7 @@ export const Predict: Command = {
 
         if(session.rowCount === 0)
         {
-            throw new Error("There's not a session to predict today");
+            throw new Error("There's not a session to predict today!");
         }
 
         if(hasSessionStarted(session.rows[0].time))
